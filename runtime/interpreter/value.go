@@ -11543,7 +11543,7 @@ func NewPublicKeyValue(
 
 	// Validate the public key.
 	isValid := validatePublicKey(interpreter, getLocationRange, publicKeyValue)
-	if (!isValid) {
+	if !isValid {
 		panic("invalid public key")
 	}
 
