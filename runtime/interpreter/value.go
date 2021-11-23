@@ -11541,14 +11541,11 @@ func NewPublicKeyValue(
 		sema.PublicKeyVerifyPoPFunction: publicKeyVerifyPoPFunction,
 	}
 
-	// Validate the public key, and initialize 'isValid' field.
-
-	publicKeyValue.SetMember(
-		interpreter,
-		getLocationRange,
-		sema.PublicKeyIsValidField,
-		validatePublicKey(interpreter, getLocationRange, publicKeyValue),
-	)
+	// Validate the public key.
+	isValid := validatePublicKey(interpreter, getLocationRange, publicKeyValue)
+	if (!isValid) {
+		panic("invalid public key")
+	}
 
 	// Public key value to string should include the key even though it is a computed field
 	publicKeyValue.Stringer = func(publicKeyValue *CompositeValue, seenReferences SeenReferences) string {
@@ -11561,11 +11558,6 @@ func NewPublicKeyValue(
 				Name: sema.PublicKeySignAlgoField,
 				// TODO: provide proper location range
 				Value: publicKeyValue.GetField(interpreter, ReturnEmptyLocationRange, sema.PublicKeySignAlgoField),
-			},
-			{
-				Name: sema.PublicKeyIsValidField,
-				// TODO: provide proper location range
-				Value: publicKeyValue.GetField(interpreter, ReturnEmptyLocationRange, sema.PublicKeyIsValidField),
 			},
 		}
 

@@ -3125,19 +3125,9 @@ func NewPublicKeyFromValue(
 		)
 	}
 
-	// `valid` and `validated` fields
-	var valid, validated bool
-	validField := publicKey.GetMember(inter, getLocationRange, sema.PublicKeyIsValidField)
-	validated = validField != nil
-	if validated {
-		valid = bool(validField.(interpreter.BoolValue))
-	}
-
 	return &PublicKey{
 		PublicKey: byteArray,
 		SignAlgo:  SignatureAlgorithm(signAlgoRawValue.ToInt()),
-		IsValid:   valid,
-		Validated: validated,
 	}, nil
 }
 
@@ -3163,11 +3153,6 @@ func NewPublicKeyValue(
 			getLocationRange func() interpreter.LocationRange,
 			publicKeyValue *interpreter.CompositeValue,
 		) interpreter.BoolValue {
-			// If the public key is already validated, avoid re-validating, and return the cached result.
-			if publicKey.Validated {
-				return interpreter.BoolValue(publicKey.IsValid)
-			}
-
 			return validatePublicKey(inter, getLocationRange, publicKeyValue)
 		},
 	)
